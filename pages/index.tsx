@@ -1,18 +1,18 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-// import { useMoralis } from "react-moralis";
+import { useMoralis } from "react-moralis";
 
 const Home: NextPage = () => {
-  // const { authenticate, isAuthenticated, user } = useMoralis();
-  // console.log(user);
+  const { authenticate, isAuthenticated, user } = useMoralis();
+  console.log(user);
 
-  // if (!isAuthenticated) {
-  //   return (
-  //     <div>
-  //       <button onClick={() => authenticate()}>Authenticate</button>
-  //     </div>
-  //   );
-  // }
+  if (!isAuthenticated) {
+    return (
+      <div>
+        <button onClick={() => authenticate()}>Authenticate</button>
+      </div>
+    );
+  }
 
   return (
     <div>
