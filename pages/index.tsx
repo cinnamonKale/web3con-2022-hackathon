@@ -1,10 +1,15 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useEffect } from "react";
 import { useMoralis } from "react-moralis";
 
 const Home: NextPage = () => {
-  const { authenticate, isAuthenticated, user } = useMoralis();
+  const { authenticate, isAuthenticated, user, initialize } = useMoralis();
   console.log(user);
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
   if (!isAuthenticated) {
     return (
