@@ -11,7 +11,7 @@ module.exports = {
       padding: "2rem",
     },
     extend: {
-      font: {
+      fontFamily: {
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
       },
     },
