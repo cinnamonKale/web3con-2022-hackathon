@@ -45,7 +45,7 @@ const Home: NextPage = () => {
                 <span className="block">Network: Polygon</span>
               </div>
               <button
-                onClick={logout}
+                onClick={() => logout()}
                 className="bg-blue-900 px-4 py-3 border-2 border-blue-700 hover:bg-blue-600 rounded-full transition-colors duration-100"
               >
                 <span className="block">Disconnect</span>
@@ -54,7 +54,7 @@ const Home: NextPage = () => {
           ) : (
             <div>
               <button
-                onClick={authenticate}
+                onClick={() => authenticate()}
                 className="bg-blue-900 px-4 py-3 border-2 border-blue-700 hover:bg-blue-600 rounded-full transition-colors duration-100"
               >
                 Connect Wallet
