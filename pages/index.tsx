@@ -70,7 +70,7 @@ const Home: NextPage = () => {
       </header>
 
       <main className="container">
-        <div className="card bg-neutral-800 rounded-2xl border-neutral-600 border-2 text-white p-6 flex flex-col md:flex-row items-center md:items-stretch flex-wrap">
+        <div className="card bg-neutral-800 rounded-2xl border-neutral-600 border-2 text-white p-6 flex flex-col md:flex-row items-center md:items-stretch flex-wrap max-w-3xl mx-auto">
           <div className="card-avatar w-4/12 relative">
             <a
               href="https://opensea.io/assets/0x3eff964d46c62be703d9a01ef720ba0479e79c3c/3329"
