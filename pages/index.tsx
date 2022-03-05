@@ -109,7 +109,7 @@ const Home: NextPage = () => {
               <img
                 src={
                   nfts?.result
-                    ? nfts.result[0]?.image ||
+                    ? nfts.result[0]?.metadata?.image ||
                       nfts.result[0]?.metadata?.image_url
                     : null
                 }
@@ -163,14 +163,17 @@ const Home: NextPage = () => {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        <img src={n.image || n.metadata?.image_url} alt="" />
+                        <img
+                          src={n.metadata?.image || n.metadata?.image_url}
+                          alt=""
+                        />
                       </a>
                     </div>
                   ))
                 : null}
 
               {[1, 2, 3, 4, 5].map((n, i) => {
-                if (i + nfts?.result?.length >= 5) return null;
+                if (i + (nfts?.result?.length || 0) >= 5) return null;
                 return (
                   <div key={`add-new-${n}`} className="card-collection-item">
                     <button>
