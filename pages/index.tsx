@@ -1,17 +1,24 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useEffect } from "react";
-import { useMoralis, useEnsAddress } from "react-moralis";
-import { LogoutIcon, PlusCircleIcon } from "@heroicons/react/solid";
-
-const testWallet = "0x0000000000000000000000000000000000000000";
-
-const truncatedWallet = `${testWallet.substring(0, 4)}...${testWallet.substring(
-  testWallet.length - 4,
-  testWallet.length
-)}`;
+import { useState, useEffect } from "react";
+import {
+  useMoralis,
+  useEnsAddress,
+  useMoralisWeb3Api,
+  useMoralisWeb3ApiCall,
+  useNFTBalances,
+  useChain,
+} from "react-moralis";
+import { PlusCircleIcon } from "@heroicons/react/solid";
 
 const Home: NextPage = () => {
+  const [walletAddress, setWalletAddress] = useState({
+    full: "",
+    truncated: "",
+  });
+
+  const { switchNetwork, chainId, chain, account } = useChain();
+
   const {
     authenticate,
     logout,
@@ -21,12 +28,33 @@ const Home: NextPage = () => {
     authError,
     hasAuthError,
   } = useMoralis();
-  const { name, isLoading, error } = useEnsAddress(user?.id || "");
-  console.log(authError);
+
+  const { name: ensName, isLoading, error } = useEnsAddress(account || "");
+
+  const { getNFTBalances, data: nfts, isFetching } = useNFTBalances();
+
+  console.log({ chain, account });
+
+  console.log({ ensName, isLoading });
+  console.log({ user });
+  console.log({ authError });
+  console.log({ nfts });
 
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  useEffect(() => {
+    const full = account || "";
+    /** Looks like 0x00...0000 */
+    const truncated = full
+      ? `${full.substring(0, 4)}...${full.substring(
+          full.length - 4,
+          full.length
+        )}`
+      : "";
+    setWalletAddress({ full, truncated });
+  }, [account]);
 
   return (
     <div>
@@ -41,8 +69,8 @@ const Home: NextPage = () => {
           {isAuthenticated ? (
             <>
               <div>
-                <span className="block">{truncatedWallet}</span>
-                <span className="block">Network: Polygon</span>
+                <span className="block">{walletAddress.truncated}</span>
+                <span className="block">Network: {chain?.name}</span>
               </div>
               <button
                 onClick={() => logout()}
@@ -79,26 +107,31 @@ const Home: NextPage = () => {
               className="block rounded-xl overflow-hidden"
             >
               <img
-                src="https://lh3.googleusercontent.com/NGSjNZkKImLpxMeKWbxEQY4Z8pyXCFuxwHGwMqLfaWR475ULAhQur_FqG_vQfPo9tP_5B0u55UhLdJk_C0Kin_k7GqFefNfPXtZNLQ=w351"
+                src={
+                  nfts?.result
+                    ? nfts.result[0]?.image ||
+                      nfts.result[0]?.metadata?.image_url
+                    : null
+                }
                 alt=""
               />
             </a>
             <span className="block absolute bottom-2 left-0 -rotate-90 whitespace-nowrap origin-bottom-left text-xs uppercase font-semibold text-neutral-500">
-              Tiki #3329
+              {nfts?.result ? nfts.result[0]?.metadata?.name : null}
             </span>
           </div>
           <div className="card-info w-8/12 flex flex-col justify-around md:pl-6">
             <div className="">
               <h3>Name</h3>
-              <span>michaelmercer.eth</span>
+              <span>{ensName}</span>
             </div>
 
             <div className="">
               <h3>Website</h3>
               <span>
-                <a href="michaelmercer.xyz" target="_blank" rel="noreferrer">
-                  michaelmercer.xyz
-                </a>
+                {/* <a href="michaelmercer.xyz" target="_blank" rel="noreferrer"> */}
+                None set
+                {/* </a> */}
               </span>
             </div>
 
@@ -106,12 +139,12 @@ const Home: NextPage = () => {
               <h3>Wallet Address</h3>
               <span>
                 <a
-                  href={`https://etherscan.io/address/${testWallet}`}
+                  href={`${chain?.blockExplorerUrl}/address/${walletAddress.full}`}
                   target="_blank"
                   rel="noreferrer"
-                  title={testWallet}
+                  title={walletAddress.full}
                 >
-                  {testWallet}
+                  {walletAddress.full}
                 </a>
               </span>
             </div>
@@ -119,50 +152,33 @@ const Home: NextPage = () => {
           <div className="card-collection w-full mt-6">
             <h3 className="mb-2">Featured Collection</h3>
             <div className="flex flex-wrap -mx-1">
-              <div className="card-collection-item">
-                <a href="#">
-                  <img
-                    src="https://lh3.googleusercontent.com/DdG2ouup4GsEfpsY7H57jJyFhnAeNqF0bJ62UoiueoS0MGH5neGTEdTdr84U42Hv7DUiiunl3V3WabOl5QXwRShIMJhHrkKjJEmCDz4=w325"
-                    alt=""
-                  />
-                </a>
-              </div>
+              {nfts?.result
+                ? nfts.result.map((n) => (
+                    <div
+                      key={`${n.token_address}-${n.token_id}`}
+                      className="card-collection-item"
+                    >
+                      <a
+                        href={`https://opensea.io/assets/${n.token_address}/${n.token_id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <img src={n.image || n.metadata?.image_url} alt="" />
+                      </a>
+                    </div>
+                  ))
+                : null}
 
-              <div className="card-collection-item">
-                <a href="#">
-                  <img
-                    src="https://lh3.googleusercontent.com/DdG2ouup4GsEfpsY7H57jJyFhnAeNqF0bJ62UoiueoS0MGH5neGTEdTdr84U42Hv7DUiiunl3V3WabOl5QXwRShIMJhHrkKjJEmCDz4=w325"
-                    alt=""
-                  />
-                </a>
-              </div>
-
-              <div className="card-collection-item">
-                <a href="#">
-                  <img
-                    src="https://lh3.googleusercontent.com/DdG2ouup4GsEfpsY7H57jJyFhnAeNqF0bJ62UoiueoS0MGH5neGTEdTdr84U42Hv7DUiiunl3V3WabOl5QXwRShIMJhHrkKjJEmCDz4=w325"
-                    alt=""
-                  />
-                </a>
-              </div>
-
-              <div className="card-collection-item">
-                <a href="#">
-                  <img
-                    src="https://lh3.googleusercontent.com/DdG2ouup4GsEfpsY7H57jJyFhnAeNqF0bJ62UoiueoS0MGH5neGTEdTdr84U42Hv7DUiiunl3V3WabOl5QXwRShIMJhHrkKjJEmCDz4=w325"
-                    alt=""
-                  />
-                </a>
-              </div>
-
-              <div className="card-collection-item">
-                <a href="#">
-                  <img
-                    src="https://lh3.googleusercontent.com/DdG2ouup4GsEfpsY7H57jJyFhnAeNqF0bJ62UoiueoS0MGH5neGTEdTdr84U42Hv7DUiiunl3V3WabOl5QXwRShIMJhHrkKjJEmCDz4=w325"
-                    alt=""
-                  />
-                </a>
-              </div>
+              {[1, 2, 3, 4, 5].map((n, i) => {
+                if (i + nfts?.result?.length >= 5) return null;
+                return (
+                  <div key={`add-new-${n}`} className="card-collection-item">
+                    <button>
+                      <PlusCircleIcon />
+                    </button>
+                  </div>
+                );
+              })}
 
               <div className="card-collection-item">
                 <button>
