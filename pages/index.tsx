@@ -21,9 +21,8 @@ const Home: NextPage = () => {
     authError,
     hasAuthError,
   } = useMoralis();
-  console.log(user);
-  const { name, isLoading, error } = useEnsAddress(user?.id);
-  console.log(authError, hasAuthError);
+  const { name, isLoading, error } = useEnsAddress(user?.id || "");
+  console.log(authError);
 
   useEffect(() => {
     initialize();
