@@ -4,6 +4,37 @@
 
 @layer base {
   body {
-    @apply bg-zinc-900 text-white;
+    @apply bg-neutral-900 text-white;
+  }
+}
+
+@layer components {
+  .card h3 {
+    @apply uppercase font-semibold text-neutral-500 text-xs;
+  }
+
+  .card-info a {
+    @apply underline hover:no-underline;
+  }
+
+  .card-info span {
+    @apply block break-all;
+  }
+
+  .card-collection-item {
+    @apply w-2/12 p-1;
+  }
+
+  .card-collection-item > * {
+    @apply block aspect-square overflow-hidden rounded-xl;
+  }
+
+  .card-collection-item button {
+    @apply block w-full h-auto bg-neutral-700 text-neutral-600 p-4;
+  }
+
+  .card-collection-item img,
+  .card-collection-item svg {
+    @apply block w-full h-auto hover:scale-125 transition-transform duration-300 ease-in-out;
   }
 }
